@@ -33,23 +33,23 @@
 * CPU limits must be never set
 * Each component must have its own service account. It must never use default service account
 * If the pod does not need access to the Kubernetes API, the service account token is not mounted to it
-* The pod spec should satisfy the restricted pod security policy provided by Kubernetes https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml
+* The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
   * Pod should drop all capabilities
   * Pod should have proper seccomd or apparmor annotation
   * Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem
 * If a pod requires TLS/SSL cert/keys for public consumption it must support utilizing cert-manager.
 * Ports that are exposed by pod must have a name which should be the same as in corresponding service
-* The specification allows to set affinity and anti-affinity rules. 
+* The specification allows to set affinity and anti-affinity rules
   
 ## Service specification
 
-* The component creates a service if it has to be accessed by other components.  Service ports should have the name of format <protocol>[-<suffix>], e.g. grpc-api or tcp-database.  See more in Istio documentation
+* The component creates a service if it has to be accessed by other components.  Service ports should have the name of format `<protocol>[-<suffix>]`, e.g. `grpc-api` or `tcp-database`.  See more in Istio documentation
 * The service must have the same labels as a pod
 
 ## Other Kubernetes objects
 
 * If the process is expected to have no downtime it has PodDisruptionBudget
-* Minimal pod security policy is provided. Ideally, it should be the same (or stricter) as https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml 
+* Minimal pod security policy is provided. Ideally, it should be the same (or stricter) as [Kubernetes provided policy](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
 * Sample networking policy is provided
 * Sample Istio RBAC is provided
 * If the component has to be accessed externally, it writes a K8s Ingress resource or a set of Istio VirtualService + Gateway resourcesprovides ingress with free form annotations and the ability to provide a load balancer
