@@ -2,17 +2,49 @@
 
 Also check [shorter version](./README.md)
 
+## Structure
+
+The document consists of two big parts: criterias grouped in themes and guidelines that solving some of the problems the criterias define. The intend of the document is to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
+
 ## Wording
 
 Component - a single application.
 Platform engineer - a person responsible for deploying and operating Cloud Foundry.
 
-## Production readiness
+## Production readiness criterias
 
-Resilience
-Operability
-Security
-Open Source
+### Resilience 
+
+Ability to provide acceptable level of service in the face of faults. 
+
+#### Availability
+
+#### Failure Recovery
+
+#### Isolation
+
+### Operability
+
+#### Resource Planning
+
+#### Health Monitoring
+
+#### Scalability
+
+#### Logging
+
+#### Diagnostics Tooling
+
+#### Customisation
+
+#### Upgrades
+
+### Security
+
+### Open Source
+
+As an open source contributor, I am able to submit a patch for the component(that passing tests).
+As an open source platform architect, I am able to consume the component.
 
 ## Code
 
@@ -25,7 +57,7 @@ Improves:
 * operability.
 * upgradability by allowing using blue-green deployments.
 
-### Logging
+### Log location
 
 All logs must go in stdout/stderr
 
