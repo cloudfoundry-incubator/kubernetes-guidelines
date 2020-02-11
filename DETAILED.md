@@ -2,6 +2,42 @@
 
 Also check [shorter version](./README.md)
 
+* [Structure](#structure)
+* [Wording](#wording)
+* [Production readiness criterias](#production-readiness-criterias)
+  * [Resilience](#resilience)
+    * [Availability](#availability)
+    * [Failure Recovery](#failure-recovery)
+    * [Isolation](#isolation)
+  * [Operability](#operability)
+    * [Resource Planning](#resource-planning)
+    * [Health Monitoring](#health-monitoring)
+    * [Scalability](#scalability)
+    * [Logging](#logging)
+    * [Diagnostics Tooling](#diagnostics-tooling)
+    * [Customisation](#customisation)
+    * [Upgrades](#upgrades)
+  * [Security](#security)
+  * [Open Source](#open-source)
+* [Code](#code)
+  * [Health endpoint](#health-endpoint)
+  * [Log location](#log-location)
+  * [Configuration](#configuration)
+  * [Rollback](#rollback)
+  * [Work with signals](#work-with-signals)
+  * [Resilience to upgrades](#resilience-to-upgrades)
+* [Packaging](#packaging)
+  * [Non-root user](#non-root-user)
+  * [Metadata](#metadata)
+  * [Base image](#base-image)
+  * [Dependencies](#dependencies)
+* [Pod specification](#pod-specification)
+* [Service specification](#service-specification)
+* [Other Kubernetes objects](#other-kubernetes-objects)
+* [Work with other components](#work-with-other-components)
+* [Documentation](#documentation)
+* [Kubernetes versions support](#kubernetes-versions-support)
+
 ## Structure
 
 The document consists of two big parts: criterias grouped in themes and guidelines that solving some of the problems the criterias define. The intend of the document is to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
@@ -13,7 +49,7 @@ Platform engineer - a person responsible for deploying and operating Cloud Found
 
 ## Production readiness criterias
 
-### Resilience 
+### Resilience
 
 Ability to provide acceptable level of service in the face of faults. 
 
