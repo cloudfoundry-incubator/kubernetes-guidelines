@@ -252,9 +252,17 @@ The pod must have as little containers as possible. Ideally, a single pod should
 
 The non short-living pod must have up as little init containers as possible.  Most of native Kubernetes deployments to 2 init containers in its spec.
 
+Improves:
+
+* [upgrades](#upgrades)
+* [failure recovery](#failure-recovery)
+
+Reason:
+The pod executes init containers sequentially and this slows down the pod startup. Consider using Kubernetes jobs instead.
+
 #### Pod requests
 
-* Each container in a pod must always have configurable CPU & memory requests with sane defaults(required to run 50 applications /start 5 at the same time)
+Each container in a pod must always have configurable CPU & memory requests with sane defaults(required to run 50 applications /start 5 at the same time)
 
 #### Pod limits
 
