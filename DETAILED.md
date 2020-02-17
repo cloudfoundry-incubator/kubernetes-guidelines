@@ -2,42 +2,72 @@
 
 Also check [shorter version](./README.md)
 
-* [Structure](#structure)
-* [Wording](#wording)
-* [Production readiness criterias](#production-readiness-criterias)
-  * [Resilience](#resilience)
-    * [Availability](#availability)
-    * [Failure Recovery](#failure-recovery)
-    * [Isolation](#isolation)
-  * [Operability](#operability)
-    * [Resource Planning](#resource-planning)
-    * [Health Monitoring](#health-monitoring)
-    * [Scalability](#scalability)
-    * [Logging](#logging)
-    * [Diagnostics Tooling](#diagnostics-tooling)
-    * [Customisation](#customisation)
-    * [Upgrades](#upgrades)
-  * [Security](#security)
-  * [Open Source](#open-source)
-* [Guidelines](#guidelines)
-  * [Code](#code)
-    * [Health endpoint](#health-endpoint)
-    * [Log location](#log-location)
-    * [Configuration](#configuration)
-    * [Rollback](#rollback)
-    * [Work with signals](#work-with-signals)
-    * [Resilience to upgrades](#resilience-to-upgrades)
-  * [Packaging](#packaging)
-    * [Non-root user](#non-root-user)
-    * [Metadata](#metadata)
-    * [Base image](#base-image)
-    * [Dependencies](#dependencies)
-  * [Pod specification](#pod-specification)
-  * [Service specification](#service-specification)
-  * [Other Kubernetes objects](#other-kubernetes-objects)
-  * [Work with other components](#work-with-other-components)
-  * [Documentation](#documentation)
-  * [Kubernetes versions support](#kubernetes-versions-support)
+- [Kubernetes-idiomatic Cloud Foundry components guidelines](#kubernetes-idiomatic-cloud-foundry-components-guidelines)
+  - [Structure](#structure)
+  - [Wording](#wording)
+  - [Production readiness criterias](#production-readiness-criterias)
+    - [Resilience](#resilience)
+      - [Availability](#availability)
+      - [Failure Recovery](#failure-recovery)
+      - [Isolation](#isolation)
+    - [Operability](#operability)
+      - [Resource Planning](#resource-planning)
+      - [Health Monitoring](#health-monitoring)
+      - [Scalability](#scalability)
+      - [Logging](#logging)
+      - [Diagnostics Tooling](#diagnostics-tooling)
+      - [Customisation](#customisation)
+      - [Upgrades](#upgrades)
+    - [Security](#security)
+    - [Open Source](#open-source)
+  - [Guidelines](#guidelines)
+    - [Code](#code)
+      - [Health endpoint](#health-endpoint)
+      - [Log location](#log-location)
+      - [Configuration](#configuration)
+      - [Rollback](#rollback)
+      - [Work with signals](#work-with-signals)
+      - [Resilience to upgrades](#resilience-to-upgrades)
+    - [Packaging](#packaging)
+      - [Non-root user](#non-root-user)
+      - [Metadata](#metadata)
+      - [Base image](#base-image)
+      - [Dependencies](#dependencies)
+      - [Keeping base image up to date](#keeping-base-image-up-to-date)
+      - [Image location](#image-location)
+      - [Packaging instructions](#packaging-instructions)
+    - [Pod specification](#pod-specification)
+      - [Image referenced by sha256](#image-referenced-by-sha256)
+      - [Pod labels](#pod-labels)
+      - [Readiness probe](#readiness-probe)
+      - [Liveness probe](#liveness-probe)
+      - [Number of containers](#number-of-containers)
+      - [Number of init containers](#number-of-init-containers)
+      - [Pod requests](#pod-requests)
+      - [Pod limits](#pod-limits)
+      - [Pod service account](#pod-service-account)
+      - [Pod using service account](#pod-using-service-account)
+      - [Pod security configuration](#pod-security-configuration)
+      - [Using keys](#using-keys)
+      - [Pod port names](#pod-port-names)
+      - [Affinity](#affinity)
+    - [Service specification](#service-specification)
+      - [Service pod names](#service-pod-names)
+      - [Service labels](#service-labels)
+    - [Other Kubernetes objects](#other-kubernetes-objects)
+      - [Pod Disrution Budget](#pod-disrution-budget)
+      - [Pod Security Policy](#pod-security-policy)
+      - [Networking policy](#networking-policy)
+      - [Istio RBAC](#istio-rbac)
+      - [Access from outside](#access-from-outside)
+      - [Using secrets](#using-secrets)
+      - [Service accounts](#service-accounts)
+      - [Replicas count](#replicas-count)
+    - [Work with other components](#work-with-other-components)
+      - [Optional parts](#optional-parts)
+      - [Using custom DNS addreses](#using-custom-dns-addreses)
+    - [Documentation](#documentation)
+    - [Kubernetes versions support](#kubernetes-versions-support)
 
 ## Structure
 
@@ -179,54 +209,137 @@ Improves:
 
 The run image should not have packages required for compilation, only for running. i.e. don’t have Go package or JDK in the final image, For java, only JRE should be shipped
 
+#### Keeping base image up to date
 
+Images are continuously updated with the new version of the base layer. (pack rebase if possible)
+Reason: Better security
 
-* Images are continuously updated with the new version of the base layer. (pack rebase if possible)
-* Images are stored in the CFF organization under Dockerhub
-* The component has clear instructions on how to build its container image
+#### Image location
+
+Images are stored in the CFF organization under Dockerhub.
+
+#### Packaging instructions
+
+The component has clear instructions on how to build its container image
 
 ### Pod specification
 
-* The image references must always include sha256 for versioning
-* The component should have the labels that suggested by Kubernetes At least app.kubernetes.io/name, app.kubernetes.io/version. The app.kubernetes.io/part-of is set to Cloud Foundry
-* The readiness probe for the main container must be always present
-* Liveness probe if present should point to a different endpoint than the readiness probe. Ideally something that does not require any processing
-* In general, a single pod should have a single container. There are might be edge-cases, but the pod shouldn’t have more than 5 containers in its spec
-* The long-living pod can have up to 2 init containers in its spec
+#### Image referenced by sha256
+
+The image references must always include sha256 for versioning
+
+#### Pod labels
+
+The component should have [the labels that suggested by Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels), for example `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
+
+#### Readiness probe
+
+The readiness probe for the main container must be always present
+
+#### Liveness probe
+
+The liveness probe if present should point to a different endpoint than the readiness probe. Ideally something that does not require any processing. The liveness probe should only fail if the application is in unrecoverable state.
+
+#### Number of containers
+
+The pod must have as little containers as possible. Ideally, a single pod should have a single container. Most of native Kubernetes deployments have up to three containers.
+
+#### Number of init containers
+
+The non short-living pod must have up as little init containers as possible.  Most of native Kubernetes deployments to 2 init containers in its spec.
+
+#### Pod requests
+
 * Each container in a pod must always have configurable CPU & memory requests with sane defaults(required to run 50 applications /start 5 at the same time)
-* Memory limits are optional, but if they are present they must be at least 50% bigger than requests
-* CPU limits must be never set
-* Each component must have its own service account. It must never use default service account
-* If the pod does not need access to the Kubernetes API, the service account token is not mounted to it
-* The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
+
+#### Pod limits
+
+Memory limits are optional, but if they are present they must be at least 50% bigger than requests. CPU limits must be never set.
+
+#### Pod service account
+
+Each component must have its own service account. It must never use default service account
+
+#### Pod using service account
+
+If the pod does not need access to the Kubernetes API, the service account token is not mounted to it
+
+#### Pod security configuration
+
+The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
   * Pod should drop all capabilities
   * Pod should have proper seccomd or apparmor annotation
   * Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem
+
+#### Using keys
+
 * If a pod requires TLS/SSL cert/keys for public consumption it must support utilizing cert-manager.
+
+#### Pod port names
+
 * Ports that are exposed by pod must have a name which should be the same as in corresponding service
+
+#### Affinity
+
 * The specification allows to set affinity and anti-affinity rules
   
 ### Service specification
 
+#### Service pod names
+
 * The component creates a service if it has to be accessed by other components.  Service ports should have the name of format `<protocol>[-<suffix>]`, e.g. `grpc-api` or `tcp-database`.  See more in Istio documentation
+
+#### Service labels
+
 * The service must have the same labels as a pod
 
 ### Other Kubernetes objects
 
+#### Pod Disrution Budget
+
 * If the process is expected to have no downtime it has PodDisruptionBudget
+
+#### Pod Security Policy
+
 * Minimal pod security policy is provided. Ideally, it should be the same (or stricter) as [Kubernetes provided policy](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
+
+#### Networking policy
+
 * Sample networking policy is provided
+
+#### Istio RBAC
+
 * Sample Istio RBAC is provided
+
+#### Access from outside
+
 * If the component has to be accessed externally, it writes a K8s Ingress resource or a set of Istio VirtualService + Gateway resourcesprovides ingress with free form annotations and the ability to provide a load balancer
+
+#### Using secrets
+
 * If the component needs some secrets, it has an option to use an existing Kubernetes object with the predefined format. The Kubernetes object name can be provided by the platform engineer.
 * The secret for certificates uses known K8s format
-* Each stateless component is deployed as a deployment
-* The number of replicas is not specified in the template unless it can only be deployed as a single copy.
+
+#### Service accounts
+
 * Each component creates and attached its own service account.
+
+#### Deployment
+
+* Each stateless component is deployed as a deployment
+
+#### Replicas count
+
+* The number of replicas is not specified in the template unless it can only be deployed as a single copy.
 
 ### Work with other components
 
+#### Optional parts
+
 * If the component has a soft dependency(can work without it) on another component, the depending part can be skipped. i.e. Eirini deploys with rootfs patcher, but rootfs patcher can be skipped in the deployment.
+
+#### Using custom DNS addreses
+
 * The address for the dependent component can always be specified by the platform engineer and has a sane default
 
 ### Documentation
@@ -236,4 +349,3 @@ The run image should not have packages required for compilation, only for runnin
 ### Kubernetes versions support
 
 * Each component is expected to support all supported by CNCF versions of Kubernetes by using correct API specification.
-* If API specification differs in version x and x+2, the component has by default the version that is supported in CFCR. Optionally, it can provide a flag to use a different API version
