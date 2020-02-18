@@ -325,13 +325,14 @@ The pod must have as little containers as possible. Ideally, a single pod should
 Improves:
 
 * [upgrades](#upgrades)
-* [failure recovery](#failure-recovery)
+* [resilience in general](#resilience)
 * [resource planning](#resource-planning)
 
 Reasons:
 
-* All the containers are scheduled on a single node needing more requests and slowing down the start.
-* 
+* All the containers are scheduled on a single node. They require more resources and slow down the start of the pod.
+* When one container is down, the pod won't be processing requests.
+* When configuration is changed for a single container, the whole pod has to restart.
 
 #### Number of init containers
 
@@ -352,13 +353,45 @@ Reasons:
 
 Each container in a pod must always have configurable CPU & memory requests with sane defaults(required to run 50 applications /start 5 at the same time)
 
+Improves:
+
+* [Resource Planning](#resource-planning)
+* [Availability](#availability)
+
+Reasons:
+
+* Kubernetes blocks the resources on the node and does not allow to schedule more applications that is possible. Overcommiting slows down the deployment.
+
+See all:
+
+[Managing Compute Resources](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
+
 #### Pod limits
 
 Memory limits are optional, but if they are present they must be at least 50% bigger than requests. CPU limits must be never set.
 
+Improves:
+
+* [Resource planning](#resource-planning)
+
+Reasons:
+
+* [CPU limits are broken now](https://github.com/kubernetes/kubernetes/issues/67577)
+* Pod will restart if it uses more memory than allowed
+
+See also:
+
+* [Kubecon presentation](https://www.youtube.com/watch?v=UE7QX98-kO0)
+
+
 #### Pod service account
 
-Each component must have its own service account. It must never use default service account
+Each component must have its own service account. It must never use default service account.
+
+Improves:
+
+* security
+
 
 #### Pod using service account
 
