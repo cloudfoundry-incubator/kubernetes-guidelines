@@ -287,11 +287,36 @@ The readiness probe for the main container must be always present.
 
 Improves:
 
+* availability
+* upgrades
 
+Reasons:
+
+* the pod won't serve traffic until it is ready.
+* the rolling upgrade will wait for the pod to come up before deleting the existing pod.
+* if [pod disruption budget](#pod-disrution-budget) is set, the node draining will proceed only if pods are ready.
+
+See also:
+
+[Kubernetes documentation about probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes)
 
 #### Liveness probe
 
-The liveness probe if present should point to a different endpoint than the readiness probe. Ideally something that does not require any processing. The liveness probe should only fail if the application is in unrecoverable state.
+The liveness probe should only fail if the application is in unrecoverable state and has to be restarted. Ideally, liveness probe should not be set and application should crash. If it is present, it should point to a different endpoint than the readiness probe.
+
+Improves:
+
+* availability
+
+Reasons:
+
+* Failing liveness probe causes the restart of the pod - this might take more time if the pod is scheduled on the different node.
+* Crashing of the pod might increase pressure on the running pods.
+
+See also:
+
+* [Outage report](https://keepingitclassless.net/2018/12/december-4-nre-labs-outage-post-mortem/)
+* [Liveness probes are dangerous](https://srcco.de/posts/kubernetes-liveness-probes-are-dangerous.html)
 
 #### Number of containers
 
