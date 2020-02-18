@@ -248,6 +248,17 @@ The liveness probe if present should point to a different endpoint than the read
 
 The pod must have as little containers as possible. Ideally, a single pod should have a single container. Most of native Kubernetes deployments have up to three containers.
 
+Improves:
+
+* [upgrades](#upgrades)
+* [failure recovery](#failure-recovery)
+* [resource planning](#resource-planning)
+
+Reasons:
+
+* All the containers are scheduled on a single node needing more requests and slowing down the start.
+* 
+
 #### Number of init containers
 
 The non short-living pod must have up as little init containers as possible.  Most of native Kubernetes deployments to 2 init containers in its spec.
@@ -257,8 +268,11 @@ Improves:
 * [upgrades](#upgrades)
 * [failure recovery](#failure-recovery)
 
-Reason:
-The pod executes init containers sequentially and this slows down the pod startup. Consider using Kubernetes jobs instead.
+Reasons:
+
+* The pod executes init containers sequentially and this slows down the pod startup. Consider using Kubernetes jobs instead.
+* Crashes in init containers do not show up in pod crash count.
+* The logs from init containers is impossible to get from the pod after pod is started.
 
 #### Pod requests
 
