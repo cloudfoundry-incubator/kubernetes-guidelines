@@ -190,7 +190,7 @@ Improves:
 
 #### Non-root user
 
-All components should run with a non-root user unless it is completely impossible, including “FROM scratch” images
+All components should run with a non-root user unless it is completely impossible, including “FROM scratch” images. The user UID should not be 1337 due to [Istio limitations](https://istio.io/docs/ops/deployment/requirements/).
 
 Improves:
 

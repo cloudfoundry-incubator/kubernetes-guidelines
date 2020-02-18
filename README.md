@@ -11,7 +11,7 @@
 
 ## Packaging
 
-* All components should run with a non-root user unless it is completely impossible. Even “FROM scratch” images
+* All components should run with a non-root user(but not the user with UID 1337) unless it is completely impossible. Even “FROM scratch” images
 * All components images should have labels in the metadata with repo URL and SHA of the commit it the metadata
 * All components should have the possibility to change the base image
 * The default base image should come from cloudfoundry/stacks
