@@ -247,7 +247,7 @@ Reasons:
 
 #### Dependencies
 
-The run image should not have packages required for compilation, only for running. i.e. don’t have Go package or JDK in the final image, For java, only JRE should be shipped.
+The run image should not have packages required for compilation, only for running. i.e. don’t have Go package or JDK in the final image, For java, only JRE should be shipped. It should be possible to get a list of current dependencies installed inside.
 
 Improves:
 
@@ -258,7 +258,8 @@ Improves:
 
 Reasons:
 
-The unneeded packages increase the size of the image and require upgrading it more often.
+* The unneeded packages increase the size of the image and require upgrading it more often.
+* The operator needs to know if the packages in the image up-to-date or not.
 
 See also:
 
