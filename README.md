@@ -43,7 +43,8 @@
   
 ## Service specification
 
-* The component creates a service if it has to be accessed by other components.  Service ports should have the name of format `<protocol>[-<suffix>]`, e.g. `grpc-api` or `tcp-database`.  See more in Istio documentation
+* The component creates a service for its pods.
+* Service ports should have the name of format `<protocol>[-<suffix>]`, e.g. `grpc-api` or `tcp-database`.  See more in Istio documentation
 * The service must have the same labels as a pod
 
 ## Other Kubernetes objects

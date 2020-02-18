@@ -361,6 +361,10 @@ The specification allows to set affinity and anti-affinity rules
   
 ### Service specification
 
+#### Using services
+
+All pods should be part of services due to [Istio requirement](https://istio.io/docs/ops/deployment/requirements/).
+
 #### Service pod names
 
 The component creates a service if it has to be accessed by other components.  Service ports should have the name of format `<protocol>[-<suffix>]`, e.g. `grpc-api` or `tcp-database`.  See more in Istio documentation
