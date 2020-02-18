@@ -116,6 +116,10 @@ Guidelines:
 
 #### Upgrades
 
+As a platform operator, I am able to upgrade the Kubernetes clustrer with the minimum application downtime.
+
+As a platform operator, I am able to upgrade Cloud Foundry with minimum control plane downtime.
+
 Guidelines:
 
 * [Health checks](#health-endpoint)
