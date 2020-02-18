@@ -129,6 +129,7 @@ Guidelines:
 ### Open Source
 
 As an open source contributor, I am able to submit a patch for the component(that passing tests).
+
 As an open source platform architect, I am able to consume the component.
 
 ## Guidelines
@@ -215,34 +216,78 @@ Improves:
 
 #### Dependencies
 
-The run image should not have packages required for compilation, only for running. i.e. don’t have Go package or JDK in the final image, For java, only JRE should be shipped
+The run image should not have packages required for compilation, only for running. i.e. don’t have Go package or JDK in the final image, For java, only JRE should be shipped.
+
+Improves:
+
+* upgrades
+* resource planning
+* recovery
+* security
+
+Reasons:
+
+The unneeded packages increase the size of the image and require upgrading it more often. 
+
+See also:
+
+[Kubernetes best practices](https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-how-and-why-to-build-small-container-images) by Google Cloud
 
 #### Keeping base image up to date
 
 Images are continuously updated with the new version of the base layer. (pack rebase if possible)
-Reason: Better security
+
+Improves:
+
+* security
 
 #### Image location
 
 Images are stored in the CFF organization under Dockerhub.
 
+Improves:
+
+* open source
+
 #### Packaging instructions
 
 The component has clear instructions on how to build its container image
+
+Improves:
+
+* open source
 
 ### Pod specification
 
 #### Image referenced by sha256
 
-The image references must always include sha256 for versioning
+The image references must always include sha256 for versioning. The tags in Docker registries are mutable, this can cause two different version of application to run on the cluster due to node restart.
+
+Improves:
+
+* [Kubernetes cluster upgrades](#upgrades)
+* [availability](#availability)
+
+See also:
+
+[Kubernetes Configuration Best Practices](https://kubernetes.io/docs/concepts/configuration/overview/#container-images)
 
 #### Pod labels
 
 The component should have [the labels that suggested by Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels), for example `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
 
+Improves:
+
+* logging
+* diagnostic tooling
+
 #### Readiness probe
 
-The readiness probe for the main container must be always present
+The readiness probe for the main container must be always present.
+
+Improves:
+
+
 
 #### Liveness probe
 
@@ -298,7 +343,7 @@ If the pod does not need access to the Kubernetes API, the service account token
 
 The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
 
-* Pod should drop all capabilities
+* Pod should drop all capabilities. 
 * Pod should have proper seccomd or apparmor annotation
 * Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem
 
