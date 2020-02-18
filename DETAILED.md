@@ -171,6 +171,14 @@ Improves:
 
 * [upgradability](#upgrades)
 
+Reason:
+
+ It is very easy to implement blue-green deployment with the Kubernetes object and do the rollback. Ability to work with a previous version gives the platform engineer the ability to rollback using the `kubectl rollout undo` command.
+
+ See also:
+
+[Kubernetes documentation about deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+
 #### Work with signals
 
 The application must respect SIGTERM signal and start sending NotReady probe
@@ -179,13 +187,17 @@ Improves:
 
 * upgradability
 
+See also:
+
+[Termination of Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods)
+
 #### Resilience to upgrades
 
 The component is either expected to work during K8s control plane downtime or has a clear notice README that to achieve high availability, the control plane of Kubernetes must have multiple replicas.
 
 Improves:
 
-* upgradability
+* [Kubernetes cluster upgrades](#upgrades)
 
 ### Packaging
 
@@ -197,14 +209,28 @@ Improves:
 
 * security
 
+See also:
+
+[Pod security policy](#pod-security-policy)
+
 #### Metadata
 
-All components images should have labels in the metadata with repo URL and SHA of the commit it the metadata
+All components images should have labels in the metadata with repo URL and SHA of the commit it the metadata as [recommended by OCI](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
 
 Improves:
 
 * operability
 * open source
+* [diagnostics tooling](#diagnostics-tooling)
+
+Reasons:
+
+* This allows the operator to check if the component has a CVE.
+* This also helps scanners that work off of artifact metadata to determine source code/provenance (e.g. OSL, security)
+
+See also:
+
+[Eirini docker image](https://github.com/cloudfoundry-incubator/eirini/blob/16a093f7e43e56779c43b74143aee855173f1748/docker/opi/Dockerfile#L15-L17) as an example
 
 #### Base image
 
@@ -213,6 +239,11 @@ The default base image should come from cloudfoundry/stacks. All components shou
 Improves:
 
 * open source
+
+Reasons:
+
+* The base layer for the images should be the same.
+* Other Cloud Foundry Foundation members want to build their own base images.
 
 #### Dependencies
 
@@ -227,7 +258,7 @@ Improves:
 
 Reasons:
 
-The unneeded packages increase the size of the image and require upgrading it more often. 
+The unneeded packages increase the size of the image and require upgrading it more often.
 
 See also:
 
@@ -383,7 +414,6 @@ See also:
 
 * [Kubecon presentation](https://www.youtube.com/watch?v=UE7QX98-kO0)
 
-
 #### Pod service account
 
 Each component must have its own service account. It must never use default service account.
@@ -391,45 +421,96 @@ Each component must have its own service account. It must never use default serv
 Improves:
 
 * security
+* customisation
 
+Reason:
+
+This allows attaching [pod security policy](#pod-security-policy) to the pod.
 
 #### Pod using service account
 
 If the pod does not need access to the Kubernetes API, the service account token is not mounted to it
 
+Improves:
+
+* security
+
 #### Pod security configuration
 
 The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
 
-* Pod should drop all capabilities. 
+* Pod should drop all capabilities.
 * Pod should have proper seccomd or apparmor annotation
 * Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem
+
+Improves:
+
+* security
 
 #### Using keys
 
 If a pod requires TLS/SSL cert/keys for public consumption it must support utilizing cert-manager.
 
+Improves:
+
+* customisation
+
+Reason:
+
+Kubernetes secrets have a special format for certificates and the operators expect the components to use it.
+
 #### Pod port names
 
 Ports that are exposed by pod must have a name which should be the same as in corresponding service
 
+Improves:
+
+* customisation
+
+Reason:
+
+Istio requires proper [port names](https://istio.io/docs/ops/deployment/requirements/).
+
 #### Affinity
 
-The specification allows to set affinity and anti-affinity rules
-  
+The specification allows to set affinity and anti-affinity rules.
+
+Improves:
+
+* availability
+* isolation
+* resource planning
+
+See also:
+
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/)
+
 ### Service specification
 
 #### Using services
 
-All pods should be part of services due to [Istio requirement](https://istio.io/docs/ops/deployment/requirements/).
+All pods should be part of services.
+
+Reason:
+
+* [Istio requirements](https://istio.io/docs/ops/deployment/requirements/).
 
 #### Service pod names
 
-The component creates a service if it has to be accessed by other components.  Service ports should have the name of format `<protocol>[-<suffix>]`, e.g. `grpc-api` or `tcp-database`.  See more in Istio documentation
+The component creates a service if it has to be accessed by other components.  Service ports should have the name of format `<protocol>[-<suffix>]`, e.g. `grpc-api` or `tcp-database`.  See more in Istio documentation.
+
+Reason:
+
+* [Istio requirements](https://istio.io/docs/ops/deployment/requirements/).
 
 #### Service labels
 
 The service must have the same labels as a pod
+
+Improves:
+
+* [logging](#logging)
+* [diagnostics](#diagnostics-tooling)
 
 ### Other Kubernetes objects
 
@@ -437,21 +518,54 @@ The service must have the same labels as a pod
 
 If the process is expected to have no downtime it has PodDisruptionBudget
 
+Improves:
+
+* [Kubernetes cluster upgrades](#upgrades)
+
+Reason:
+
+Metadata from higher level is ignored when the node is drained. The pod disruption budget prevents too many pods from going down.
+
+See also:
+
+[Kubernetes documentation about disruptions](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/)
+
 #### Pod Security Policy
 
 Minimal pod security policy is provided. Ideally, it should be the same (or stricter) as [Kubernetes provided policy](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
+
+Improves:
+
+* [Security](#security)
 
 #### Networking policy
 
 Sample networking policy is provided
 
+Improves:
+
+* [Security](#security)
+* [Customisation](#customisation)
+* [Open Source](#open-source)
+
 #### Istio RBAC
 
 Sample Istio RBAC is provided
 
+Improves:
+
+* [Security](#security)
+* [Customisation](#customisation)
+* [Open Source](#open-source)
+
 #### Access from outside
 
 If the component has to be accessed externally, it writes a K8s Ingress resource or a set of Istio VirtualService + Gateway resourcesprovides ingress with free form annotations and the ability to provide a load balancer
+
+Improves:
+
+* [Customisation](#customisation)
+* [Open Source](#open-source)
 
 #### Using secrets
 
@@ -462,6 +576,11 @@ The secret for certificates uses known K8s format
 
 Each component creates and attached its own service account.
 
+Improves:
+
+* [Security](#security)
+* [Customisation](#customisation)
+
 #### Deployment
 
 Each stateless component is deployed as a deployment
@@ -469,6 +588,10 @@ Each stateless component is deployed as a deployment
 #### Replicas count
 
 The number of replicas is not specified in the template unless it can only be deployed as a single copy.
+
+Improves:
+
+* [Availability](#availability)
 
 ### Work with other components
 
@@ -487,3 +610,11 @@ Each non-alpha property that platform engineer can specify is documented in READ
 ### Kubernetes versions support
 
 Each component is expected to support all supported by CNCF versions of Kubernetes by using correct API specification.
+
+Improves:
+
+* [upgrades](#upgrades)
+
+Reason:
+
+APIs get deprecated and has to be fixed in advance.
