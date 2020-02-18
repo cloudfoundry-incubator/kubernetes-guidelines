@@ -1,5 +1,7 @@
 # Kubernetes-idiomatic Cloud Foundry components guidelines
 
+See the description for each guideline in [DETAILED document](DETAILED.md)
+
 ## Code
 
 * Every component must have an endpoint with health information or crash if it is unhealthy.
