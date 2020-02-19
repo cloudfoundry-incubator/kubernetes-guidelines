@@ -18,7 +18,7 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 * All components should have the possibility to change the base image
 * The default base image should come from cloudfoundry/stacks
 * The run image should not have packages required for compilation, only for running. i.e. don’t have Go package or JDK in the final image, For java, only JRE should be shipped
-* Images are continuously updated with the new version of the base layer. (pack rebase if possible)
+* Images are continuously updated with the new version of the base layer.
 * Images are stored in the CFF organization under Dockerhub
 * The component has clear instructions on how to build its container image
 
