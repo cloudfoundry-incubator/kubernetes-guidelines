@@ -623,7 +623,7 @@ APIs get deprecated and has to be fixed in advance.
 
 #### Container runtime support
 
-The component must support both Docker and ContainerD as container runtimes.
+The component must support both Docker and containerd as container runtimes.
 
 Improves:
 
@@ -631,4 +631,4 @@ Improves:
 
 Reason:
 
-Docker is widely used software. ContainerD implements CRI(container runtime interface) and is used in several public cloud offerings.
+Docker is widely used software, containerd implements CRI(container runtime interface) and is used in several public cloud offerings.
