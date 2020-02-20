@@ -75,3 +75,4 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 
 * Each component is expected to support all supported by CNCF versions of Kubernetes by using correct API specification.
 * If API specification differs in version x and x+2, the component has by default the version that is supported in CFCR. Optionally, it can provide a flag to use a different API version
+* The component must support both Docker and ContainerD as container runtimes.

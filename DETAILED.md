@@ -68,6 +68,7 @@ Also check [shorter version](./README.md)
     * [Using custom DNS addreses](#using-custom-dns-addreses)
   * [Documentation](#documentation)
   * [Kubernetes versions support](#kubernetes-versions-support)
+    * [Container runtime support](#container-runtime-support)
 
 ## Structure
 
@@ -619,3 +620,15 @@ Improves:
 Reason:
 
 APIs get deprecated and has to be fixed in advance.
+
+#### Container runtime support
+
+The component must support both Docker and ContainerD as container runtimes.
+
+Improves:
+
+* [Kubernetes cluster customisation](#customisation)
+
+Reason:
+
+Docker is widely used software. ContainerD implements CRI(container runtime interface) and is used in several public cloud offerings.
