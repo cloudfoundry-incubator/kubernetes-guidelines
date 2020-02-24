@@ -16,16 +16,16 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 * All components should run with a non-root user(but not the user with UID 1337) unless it is completely impossible. Even “FROM scratch” images
 * All components images should have labels in the metadata with repo URL and SHA of the commit it the metadata
 * All components should have the possibility to change the base image
-* The default base image should come from cloudfoundry/stacks
+* The default base image should come from `cloudfoundry/stacks`
 * The run image should not have packages required for compilation, only for running. i.e. don’t have Go package or JDK in the final image, For java, only JRE should be shipped
 * Images are continuously updated with the new version of the base layer.
-* Images are stored in the CFF organization under Dockerhub
+* Images are stored in the CFF organisation under Dockerhub
 * The component has clear instructions on how to build its container image
 
 ## Pod specification
 
 * The image references must always include sha256
-* The component should have the labels that suggested by Kubernetes At least app.kubernetes.io/name, app.kubernetes.io/version. The app.kubernetes.io/part-of is set to Cloud Foundry
+* The component should have the labels that suggested by Kubernetes At least `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
 * The readiness probe for the main container must be always present
 * Liveness probe if present should point to a different endpoint than the readiness probe. Ideally something that does not require any processing
 * In general, a single pod should have a single container. There are might be edge-cases, but the pod shouldn’t have more than 5 containers in its spec
@@ -39,7 +39,7 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
   * Pod should drop all capabilities
   * Pod should have proper seccomd or apparmor annotation
   * Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem
-* If a pod requires TLS/SSL cert/keys for public consumption it must support utilizing cert-manager.
+* If a pod requires TLS/SSL cert/keys for public consumption it must support utilising cert-manager.
 * Ports that are exposed by pod must have a name which should be the same as in corresponding service
 * The specification allows to set affinity and anti-affinity rules
   
@@ -76,4 +76,3 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 * Each component is expected to support all supported by CNCF versions of Kubernetes by using correct API specification.
 * If API specification differs in version x and x+2, the component has by default the version that is supported in CFCR. Optionally, it can provide a flag to use a different API version
 * The component must support both Docker and containerd as container runtimes.
-

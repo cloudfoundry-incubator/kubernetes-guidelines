@@ -192,7 +192,7 @@ The component must be able to use up-to-date configuration.
 
 Possible solutions:
 
-* Read the config from the config files. Ideally, a conf.d style config dir so that you can compose the config from multiple configmaps and secrets. The application should check for the file changes and update its config when it changes.
+* Read the config from the config files. Ideally, a `conf.d` style config dir so that you can compose the config from multiple configmaps and secrets. The application should check for the file changes and update its config when it changes.
 * The configs are immutable and the component only consumes new configuration through deploying between ConfigMaps and Secrets.
 * The configs are stored in config files and when the config is updated, the liveness probe starts to fail that requires Kubernetes to restart the pod.
 
@@ -284,7 +284,7 @@ See also:
 
 #### Base image
 
-The default base image should come from cloudfoundry/stacks. All components should have the possibility to change the base image
+The default base image should come from `cloudfoundry/stacks`. All components should have the possibility to change the base image
 
 Improves:
 
@@ -327,7 +327,7 @@ Improves:
 
 #### Image location
 
-Images are stored in the CFF organization under Dockerhub.
+Images are stored in the CFF organisation under Dockerhub.
 
 Improves:
 
@@ -448,7 +448,7 @@ Improves:
 
 Reasons:
 
-* Kubernetes blocks the resources on the node and does not allow to schedule more applications that is possible. Overcommiting slows down the deployment.
+* Kubernetes blocks the resources on the node and does not allow to schedule more applications that is possible. Overcommitting slows down the deployment.
 
 See all:
 
@@ -506,7 +506,7 @@ Improves:
 
 #### Using keys
 
-If a pod requires TLS/SSL cert/keys for public consumption it must support utilizing cert-manager.
+If a pod requires TLS/SSL cert/keys for public consumption it must support utilising cert-manager.
 
 Improves:
 
