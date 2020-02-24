@@ -4,7 +4,7 @@ Also check [shorter version](./README.md)
 
 * [Structure](#structure)
 * [Wording](#wording)
-* [Production readiness criterias](#production-readiness-criterias)
+* [Production readiness criteria](#production-readiness-criteria)
   * [Resilience](#resilience)
     * [Availability](#availability)
     * [Failure Recovery](#failure-recovery)
@@ -19,17 +19,16 @@ Also check [shorter version](./README.md)
     * [Upgrades](#upgrades)
   * [Security](#security)
   * [Open Source](#open-source)
-* [Guidelines](#guidelines)
   * [Code](#code)
     * [Health endpoint](#health-endpoint)
     * [Log location](#log-location)
-    * [Configuration](#configuration)
-    * [Rollback](#rollback)
+    * [Passing configuration to the application](#passing-configuration-to-the-application)
+    * [Ability to rollback](#ability-to-rollback)
     * [Work with signals](#work-with-signals)
-    * [Resilience to upgrades](#resilience-to-upgrades)
+    * [Resilience to cluster upgrades](#resilience-to-cluster-upgrades)
   * [Packaging](#packaging)
     * [Non-root user](#non-root-user)
-    * [Metadata](#metadata)
+    * [Image metadata](#image-metadata)
     * [Base image](#base-image)
     * [Dependencies](#dependencies)
     * [Keeping base image up to date](#keeping-base-image-up-to-date)
@@ -55,7 +54,7 @@ Also check [shorter version](./README.md)
     * [Service pod names](#service-pod-names)
     * [Service labels](#service-labels)
   * [Other Kubernetes objects](#other-kubernetes-objects)
-    * [Pod Disrution Budget](#pod-disrution-budget)
+    * [Pod Disruption Budget](#pod-disruption-budget)
     * [Pod Security Policy](#pod-security-policy)
     * [Networking policy](#networking-policy)
     * [Istio RBAC](#istio-rbac)
@@ -65,21 +64,21 @@ Also check [shorter version](./README.md)
     * [Replicas count](#replicas-count)
   * [Work with other components](#work-with-other-components)
     * [Optional parts](#optional-parts)
-    * [Using custom DNS addreses](#using-custom-dns-addreses)
+    * [Using custom DNS addresses](#using-custom-dns-addresses)
   * [Documentation](#documentation)
   * [Kubernetes versions support](#kubernetes-versions-support)
     * [Container runtime support](#container-runtime-support)
 
 ## Structure
 
-The document consists of two big parts: criterias grouped in themes and guidelines that solving some of the problems the criterias define. The intend of the document is to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
+The document consists of two big parts: criteria grouped in themes and guidelines that solving some of the problems the criteria define. The intend of the document is to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
 
 ## Wording
 
 Component - a single application.
 Platform engineer - a person responsible for deploying and operating Cloud Foundry.
 
-## Production readiness criterias
+## Production readiness criteria
 
 ### Resilience
 
@@ -89,11 +88,19 @@ Ability to provide acceptable level of service in the face of faults.
 
 #### Failure Recovery
 
+Guidelines:
+
+* [Storing dependencies on the image](#dependencies)
+
 #### Isolation
 
 ### Operability
 
 #### Resource Planning
+
+Guidelines:
+
+* [Storing dependencies on the image](#dependencies)
 
 #### Health Monitoring
 
@@ -109,23 +116,41 @@ Guidelines:
 
 Guidelines:
 
-* [Health checks](#log-location)
+* [Log location](#log-location)
 
 #### Diagnostics Tooling
 
+Guidelines:
+
+* [Image metadata](#image-metadata)
+
 #### Customisation
+
+Guidelines:
+
+* [Passing configuration to the application](#passing-configuration-to-the-application)
 
 #### Upgrades
 
-As a platform operator, I am able to upgrade the Kubernetes clustrer with the minimum application downtime.
+As a platform operator, I am able to upgrade the Kubernetes cluster with the minimum application downtime.
 
 As a platform operator, I am able to upgrade Cloud Foundry with minimum control plane downtime.
 
 Guidelines:
 
 * [Health checks](#health-endpoint)
+* [Rollback](#ability-to-rollback)
+* [Work with signals](#work-with-signals)
+* [Resilience to cluster upgrades](#resilience-to-cluster-upgrades)
+* [Storing dependencies on the image](#dependencies)
 
 ### Security
+
+Guidelines:
+
+* [Non-root user](#non-root-user)
+* [Storing dependencies on the image](#dependencies)
+* [Keeping base image up to date](#keeping-base-image-up-to-date)
 
 ### Open Source
 
@@ -133,7 +158,12 @@ As an open source contributor, I am able to submit a patch for the component(tha
 
 As an open source platform architect, I am able to consume the component.
 
-## Guidelines
+Guidelines:
+
+* [Image metadata](#image-metadata)
+* [Base image](#base-image)
+* [Image location](#image-location)
+* [Packaging instructions](#packaging-instructions)
 
 ### Code
 
@@ -156,21 +186,41 @@ Improves:
 
 * [logging](#logging)
 
-#### Configuration
+#### Passing configuration to the application
 
-The component must be able to use up-to-date configuration
+The component must be able to use up-to-date configuration.
+
+Possible solutions:
+
+* Read the config from the config files. Ideally, a conf.d style config dir so that you can compose the config from multiple configmaps and secrets. The application should check for the file changes and update its config when it changes.
+* The configs are immutable and the component only consumes new configuration through deploying between ConfigMaps and Secrets.
+* The configs are stored in config files and when the config is updated, the liveness probe starts to fail that requires Kubernetes to restart the pod.
+
+  * Problem: It is harder to achieve high availability here.
+
+* The configs are stored in config files. When the config is updated, the pod gets restarted.
+
+  * Problem: The pod requires access to Kubernetes API.
+
+* The hash of the config will be stored in the pod specification later.
+
+  * Problem: The platform engineer needs to know how to do the manual config update.
+
+* The configuration is passed via command line flags in the pod specification
+
+  * Problem: It is not possible to use the Kubernetes secrets.
 
 Improves:
 
 * [customisation](#customisation)
 
-#### Rollback
+#### Ability to rollback
 
 The application with version n-1 should be able to start with the database that has been migrated to version n
 
 Improves:
 
-* [upgradability](#upgrades)
+* [application upgrade](#upgrades)
 
 Reason:
 
@@ -186,13 +236,13 @@ The application must respect SIGTERM signal and start sending NotReady probe
 
 Improves:
 
-* upgradability
+* [Upgrades](#upgrades)
 
 See also:
 
 [Termination of Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods)
 
-#### Resilience to upgrades
+#### Resilience to cluster upgrades
 
 The component is either expected to work during K8s control plane downtime or has a clear notice README that to achieve high availability, the control plane of Kubernetes must have multiple replicas.
 
@@ -208,26 +258,25 @@ All components should run with a non-root user unless it is completely impossibl
 
 Improves:
 
-* security
+* [security](#security)
 
 See also:
 
 [Pod security policy](#pod-security-policy)
 
-#### Metadata
+#### Image metadata
 
 All components images should have labels in the metadata with repo URL and SHA of the commit it the metadata as [recommended by OCI](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
 
 Improves:
 
-* operability
-* open source
+* [open source](#image-metadata)
 * [diagnostics tooling](#diagnostics-tooling)
 
 Reasons:
 
 * This allows the operator to check if the component has a CVE.
-* This also helps scanners that work off of artifact metadata to determine source code/provenance (e.g. OSL, security)
+* This also helps scanners that work off of artefact metadata to determine source code/provenance (e.g. OSL, security)
 
 See also:
 
@@ -239,7 +288,7 @@ The default base image should come from cloudfoundry/stacks. All components shou
 
 Improves:
 
-* open source
+* [open source](#open-source)
 
 Reasons:
 
@@ -252,14 +301,16 @@ The run image should not have packages required for compilation, only for runnin
 
 Improves:
 
-* upgrades
-* resource planning
-* recovery
-* security
+* [upgrades](#upgrades)
+* [resource planning](#resource-planning)
+* [recovery](#failure-recovery)
+* [security](#security)
 
 Reasons:
 
-* The unneeded packages increase the size of the image and require upgrading it more often.
+* It takes more time to pull new version of image in case of scaling, upgrade or recovery.
+* Images stored on the worker node disk and might require bigger disks.
+* The unneeded packages require upgrading it more often.
 * The operator needs to know if the packages in the image up-to-date or not.
 
 See also:
@@ -268,11 +319,11 @@ See also:
 
 #### Keeping base image up to date
 
-Images are continuously updated with the new version of the base layer. (pack rebase if possible)
+Images are continuously updated with the new version of the base layer.
 
 Improves:
 
-* security
+* [security](#security)
 
 #### Image location
 
@@ -280,7 +331,7 @@ Images are stored in the CFF organization under Dockerhub.
 
 Improves:
 
-* open source
+* [open source](#open-source)
 
 #### Packaging instructions
 
@@ -288,18 +339,22 @@ The component has clear instructions on how to build its container image
 
 Improves:
 
-* open source
+* [open source](#open-source)
 
 ### Pod specification
 
 #### Image referenced by sha256
 
-The image references must always include sha256 for versioning. The tags in Docker registries are mutable, this can cause two different version of application to run on the cluster due to node restart.
+The image references must always include sha256.
+
+Reasons:
+
+The tags in Docker registries are mutable, this can cause two different version of application to run on the cluster due to node restart. Sha256  provide immutable version. Both tags and versions can be used at the same time.
 
 Improves:
 
 * [Kubernetes cluster upgrades](#upgrades)
-* [availability](#availability)
+* [Availability](#availability)
 
 See also:
 
@@ -327,7 +382,7 @@ Reasons:
 
 * the pod won't serve traffic until it is ready.
 * the rolling upgrade will wait for the pod to come up before deleting the existing pod.
-* if [pod disruption budget](#pod-disrution-budget) is set, the node draining will proceed only if pods are ready.
+* if [pod disruption budget](#pod-disruption-budget) is set, the node draining will proceed only if pods are ready.
 
 See also:
 
@@ -378,7 +433,7 @@ Improves:
 
 Reasons:
 
-* The pod executes init containers sequentially and this slows down the pod startup. Consider using Kubernetes jobs instead.
+* The pod executes init containers sequentially and this increases the time for the pod to start. Consider using Kubernetes jobs instead.
 * Crashes in init containers do not show up in pod crash count.
 * The logs from init containers is impossible to get from the pod after pod is started.
 
@@ -414,7 +469,7 @@ Reasons:
 
 See also:
 
-* [Kubecon presentation](https://www.youtube.com/watch?v=UE7QX98-kO0)
+* [KubeCon presentation](https://www.youtube.com/watch?v=UE7QX98-kO0)
 
 #### Pod service account
 
@@ -516,7 +571,7 @@ Improves:
 
 ### Other Kubernetes objects
 
-#### Pod Disrution Budget
+#### Pod Disruption Budget
 
 If the process is expected to have no downtime it has PodDisruptionBudget
 
@@ -601,7 +656,7 @@ Improves:
 
 If the component has a soft dependency(can work without it) on another component, the depending part can be skipped. i.e. Eirini deploys with rootfs patcher, but rootfs patcher can be skipped in the deployment.
 
-#### Using custom DNS addreses
+#### Using custom DNS addresses
 
 The address for the dependent component can always be specified by the platform engineer and has a sane default
 

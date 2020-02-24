@@ -24,7 +24,7 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 
 ## Pod specification
 
-* The image references must always include sha256 for versioning
+* The image references must always include sha256
 * The component should have the labels that suggested by Kubernetes At least app.kubernetes.io/name, app.kubernetes.io/version. The app.kubernetes.io/part-of is set to Cloud Foundry
 * The readiness probe for the main container must be always present
 * Liveness probe if present should point to a different endpoint than the readiness probe. Ideally something that does not require any processing
@@ -55,7 +55,7 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 * Minimal pod security policy is provided. Ideally, it should be the same (or stricter) as [Kubernetes provided policy](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
 * Sample networking policy is provided
 * Sample Istio RBAC is provided
-* If the component has to be accessed externally, it writes a K8s Ingress resource or a set of Istio VirtualService + Gateway resourcesprovides ingress with free form annotations and the ability to provide a load balancer
+* If the component has to be accessed externally, it writes a K8s Ingress resource or a set of Istio VirtualService + Gateway resources provides ingress with free form annotations and the ability to provide a load balancer
 * If the component needs some secrets, it has an option to use an existing Kubernetes object with the predefined format. The Kubernetes object name can be provided by the platform engineer.
 * The secret for certificates uses known K8s format
 * Each stateless component is deployed as a deployment
