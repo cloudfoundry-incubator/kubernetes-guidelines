@@ -374,12 +374,12 @@ The image references must always include sha256.
 
 Reasons:
 
-The tags in Docker registries are mutable, this can cause two different version of application to run on the cluster due to node restart. Sha256  provide immutable version. Both tags and versions can be used at the same time.
+The tags in Docker registries are mutable, this can cause two different versions of the application to run on the cluster due to node restart. Sha256  provides immutable version. Both tags and versions can be used at the same time.
 
 Improves:
 
 * [Kubernetes cluster upgrades](#upgrades)
-* [Availability](#availability) by starting the same version of the component during recovery event
+* [Availability](#availability) by starting the same version of the component during the recovery event
 
 See also:
 
@@ -387,7 +387,7 @@ See also:
 
 #### Pod labels
 
-The component should have [the labels that suggested by Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels), for example `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
+The component should have [the labels that suggested by Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels), for example, `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
 
 Improves:
 
@@ -415,7 +415,7 @@ See also:
 
 #### Liveness probe
 
-The liveness probe should only fail if the application is in unrecoverable state and has to be restarted. Ideally, liveness probe should not be set and application should crash. If it is present, it should point to a different endpoint than the readiness probe.
+The liveness probe should only fail if the application is in an unrecoverable state and has to be restarted. Ideally, the liveness probe should not be set and the application should crash. If it is present, it should point to a different endpoint than the readiness probe.
 
 Improves:
 
@@ -447,11 +447,11 @@ Reasons:
 
 * All the containers are scheduled on a single node. They require more resources and slow down the start of the pod.
 * When one container is down, the pod won't be processing requests.
-* When configuration is changed for a single container, the whole pod has to restart.
+* When the configuration is changed for a single container, the whole pod has to restart.
 
 #### Number of init containers
 
-The non short-living pod must have up as little init containers as possible.  Most of native Kubernetes deployments to 2 init containers in its spec.
+The non-short-living pod must have up as little init containers as possible.  Most of native Kubernetes deployments to 2 init containers in its spec.
 
 Improves:
 
@@ -475,7 +475,7 @@ Improves:
 
 Reasons:
 
-* Kubernetes blocks the resources on the node and does not allow to schedule more applications that is possible. Overcommitting slows down the deployment.
+* Kubernetes blocks the resources on the node and does not allow to schedule more applications that are possible. Overcommitting slows down the deployment.
 
 See all:
 
@@ -500,7 +500,7 @@ See also:
 
 #### Pod service account
 
-Each component must have its own service account. It must never use default service account.
+Each component must have its own service account. It must never use the `default` service account.
 
 Improves:
 
@@ -524,7 +524,7 @@ Improves:
 The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
 
 * Pod should drop all capabilities.
-* Pod should have proper seccomd or apparmor annotation.
+* Pod should have proper `seccomd` or `apparmor` annotation.
 * Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem.
 * Pod should set `securityContext.runAsNonRoot` property.
 
@@ -551,7 +551,7 @@ Kubernetes secrets have a special format for certificates and the operators expe
 
 #### Pod port names
 
-Ports that are exposed by pod must have a name which should be the same as in corresponding service
+Ports that are exposed by pod must have a name which should be the same as in the corresponding service
 
 Improves:
 
@@ -563,7 +563,7 @@ Istio requires proper [port names](https://istio.io/docs/ops/deployment/requirem
 
 #### Affinity
 
-The specification allows to set affinity and anti-affinity rules.
+The specification allows setting affinity and anti-affinity rules.
 
 Improves:
 
@@ -579,7 +579,7 @@ See also:
 
 #### Using services
 
-All pods should be part of the services.
+All pods should be part of services.
 
 Reason:
 
