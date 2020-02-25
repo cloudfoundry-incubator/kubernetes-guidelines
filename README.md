@@ -27,21 +27,21 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 * The image references must always include sha256
 * The component should have the labels that suggested by Kubernetes At least `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
 * The readiness probe for the main container must be always present
-* Liveness probe if present should point to a different endpoint than the readiness probe. Ideally something that does not require any processing
+* Liveness probe if present should point to a different endpoint than the readiness probe. Ideally, something that does not require any processing
 * In general, a single pod should have a single container. There are might be edge-cases, but the pod shouldn’t have more than 5 containers in its spec
 * The long-living pod can have up to 2 init containers in its spec
 * Each container in a pod must always have configurable CPU & memory requests with sane defaults(required to run 50 applications /start 5 at the same time)
 * Memory limits are optional, but if they are present they must be at least 50% bigger than requests
 * CPU limits must be never set
-* Each component must have its own service account. It must never use default service account
+* Each component must have its service account. It must never use the `default` service account
 * If the pod does not need access to the Kubernetes API, the service account token is not mounted to it
 * The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
   * Pod should drop all capabilities
   * Pod should have proper seccomd or apparmor annotation
   * Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem
 * If a pod requires TLS/SSL cert/keys for public consumption it must support utilising cert-manager.
-* Ports that are exposed by pod must have a name which should be the same as in corresponding service
-* The specification allows to set affinity and anti-affinity rules
+* Ports that are exposed by pod must have a name which should be the same as in the corresponding service
+* The specification allows setting affinity and anti-affinity rules
   
 ## Service specification
 

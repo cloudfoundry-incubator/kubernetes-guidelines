@@ -44,7 +44,7 @@ Also check [shorter version](./README.md)
     * [Pod requests](#pod-requests)
     * [Pod limits](#pod-limits)
     * [Pod service account](#pod-service-account)
-    * [Pod using service account](#pod-using-service-account)
+    * [Service account token](#service-account-token)
     * [Pod security configuration](#pod-security-configuration)
     * [Using keys](#using-keys)
     * [Pod port names](#pod-port-names)
@@ -71,7 +71,7 @@ Also check [shorter version](./README.md)
 
 ## Structure
 
-The document consists of two big parts: criteria grouped in themes and guidelines that solving some of the problems the criteria define. The intend of the document is to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
+The document consists of two big parts: criteria grouped in themes and guidelines that solving some of the problems the criteria defined. The intent of the document is to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
 
 ## Wording
 
@@ -82,17 +82,30 @@ Platform engineer - a person responsible for deploying and operating Cloud Found
 
 ### Resilience
 
-Ability to provide acceptable level of service in the face of faults.
+Ability to provide an acceptable level of service in the face of faults.
 
 #### Availability
+
+Guidelines:
+
+* [Image referenced by sha256](#image-referenced-by-sha256)
+* [Liveness probe](#liveness-probe)
+* [Number of containers](#number-of-containers)
+* [Pod requests](#pod-requests)
 
 #### Failure Recovery
 
 Guidelines:
 
 * [Storing dependencies on the image](#dependencies)
+* [Number of containers](#number-of-containers)
+* [Number of init containers](#number-of-init-containers)
 
 #### Isolation
+
+Guidelines:
+
+* [Number of containers](#number-of-containers)
 
 ### Operability
 
@@ -101,6 +114,9 @@ Guidelines:
 Guidelines:
 
 * [Storing dependencies on the image](#dependencies)
+* [Number of containers](#number-of-containers)
+* [Pod requests](#pod-requests)
+* [Resource planning](#resource-planning)
 
 #### Health Monitoring
 
@@ -117,24 +133,27 @@ Guidelines:
 Guidelines:
 
 * [Log location](#log-location)
+* [Pod labels](#pod-labels)
 
 #### Diagnostics Tooling
 
 Guidelines:
 
 * [Image metadata](#image-metadata)
+* [Pod labels](#pod-labels)
 
 #### Customisation
 
 Guidelines:
 
 * [Passing configuration to the application](#passing-configuration-to-the-application)
+* [Pod service account](#pod-service-account)
 
 #### Upgrades
 
 As a platform operator, I am able to upgrade the Kubernetes cluster with the minimum application downtime.
 
-As a platform operator, I am able to upgrade Cloud Foundry with minimum control plane downtime.
+As a platform operator, I can upgrade Cloud Foundry with minimum control plane downtime.
 
 Guidelines:
 
@@ -143,6 +162,9 @@ Guidelines:
 * [Work with signals](#work-with-signals)
 * [Resilience to cluster upgrades](#resilience-to-cluster-upgrades)
 * [Storing dependencies on the image](#dependencies)
+* [Image referenced by sha256](#image-referenced-by-sha256)
+* [Number of containers](#number-of-containers)
+* [Number of init containers](#number-of-init-containers)
 
 ### Security
 
@@ -151,6 +173,9 @@ Guidelines:
 * [Non-root user](#non-root-user)
 * [Storing dependencies on the image](#dependencies)
 * [Keeping base image up to date](#keeping-base-image-up-to-date)
+* [Pod service account](#pod-service-account)
+* [Service account token](#service-account-token)
+* [Pod security configuration](#pod-security-configuration)
 
 ### Open Source
 
@@ -354,7 +379,7 @@ The tags in Docker registries are mutable, this can cause two different version 
 Improves:
 
 * [Kubernetes cluster upgrades](#upgrades)
-* [Availability](#availability)
+* [Availability](#availability) by starting the same version of the component during recovery event
 
 See also:
 
@@ -366,8 +391,8 @@ The component should have [the labels that suggested by Kubernetes](https://kube
 
 Improves:
 
-* logging
-* diagnostic tooling
+* [logging](#logging)
+* [diagnostic tooling](#diagnostics-tooling)
 
 #### Readiness probe
 
@@ -375,8 +400,8 @@ The readiness probe for the main container must be always present.
 
 Improves:
 
-* availability
-* upgrades
+* [availability](#availability)
+* [upgrades](#upgrades)
 
 Reasons:
 
@@ -394,7 +419,7 @@ The liveness probe should only fail if the application is in unrecoverable state
 
 Improves:
 
-* availability
+* [availability](#availability)
 
 Reasons:
 
@@ -413,7 +438,9 @@ The pod must have as little containers as possible. Ideally, a single pod should
 Improves:
 
 * [upgrades](#upgrades)
-* [resilience in general](#resilience)
+* [availability](#availability)
+* [failure recovery](#failure-recovery)
+* [isolation](#isolation)
 * [resource planning](#resource-planning)
 
 Reasons:
@@ -477,32 +504,38 @@ Each component must have its own service account. It must never use default serv
 
 Improves:
 
-* security
-* customisation
+* [security](#security)
+* [customisation](#customisation)
 
 Reason:
 
 This allows attaching [pod security policy](#pod-security-policy) to the pod.
 
-#### Pod using service account
+#### Service account token
 
 If the pod does not need access to the Kubernetes API, the service account token is not mounted to it
 
 Improves:
 
-* security
+* [security](#security)
 
 #### Pod security configuration
 
 The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
 
 * Pod should drop all capabilities.
-* Pod should have proper seccomd or apparmor annotation
-* Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem
+* Pod should have proper seccomd or apparmor annotation.
+* Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem.
+* Pod should set `securityContext.runAsNonRoot` property.
 
 Improves:
 
-* security
+* [security](#security)
+
+See also:
+
+* [Pod security policies](#pod-security-policy)
+* [Non-root user for container](#non-root-user)
 
 #### Using keys
 
@@ -546,7 +579,7 @@ See also:
 
 #### Using services
 
-All pods should be part of services.
+All pods should be part of the services.
 
 Reason:
 
@@ -581,7 +614,7 @@ Improves:
 
 Reason:
 
-Metadata from higher level is ignored when the node is drained. The pod disruption budget prevents too many pods from going down.
+Metadata from a higher level is ignored when the node is drained. The pod disruption budget prevents too many pods from going down.
 
 See also:
 
@@ -686,4 +719,4 @@ Improves:
 
 Reason:
 
-Docker is widely used software, containerd implements CRI(container runtime interface) and is used in several public cloud offerings.
+Docker is widely used, containerd implements CRI(container runtime interface) and is used in several public cloud offerings.
