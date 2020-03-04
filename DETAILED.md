@@ -211,6 +211,11 @@ Improves:
 
 * [logging](#logging)
 
+Reasons:
+
+* Kubernetes handles the stdout and stderr output of the pod. It saves the logs to the known disk location and the operator can later check the logs from the previous version of the pod for some time after the restart.
+* One of the security recommendations for Kubernetes applications is to use [ReadOnlyRootFilesystem](https://kubernetes.io/docs/concepts/policy/pod-security-policy/#volumes-and-file-systems) and as a result do not write anything on the disk.
+
 #### Passing configuration to the application
 
 The component must be able to use up-to-date configuration.
@@ -265,7 +270,8 @@ Improves:
 
 See also:
 
-[Termination of Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods)
+* [Termination of Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods)
+* [Closed issue in Kubernetes](https://github.com/kubernetes/kubernetes/issues/64510) and [the blog entry with a better explanation](https://freecontent.manning.com/handling-client-requests-properly-with-kubernetes/)
 
 #### Resilience to cluster upgrades
 
