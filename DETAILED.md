@@ -71,7 +71,7 @@ Also check [shorter version](./README.md)
 
 ## Structure
 
-The document consists of two big parts: criteria grouped in themes and guidelines that solving some of the problems the criteria defined. The intent of the document is to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
+The document consists of two big parts: criteria grouped in themes and guidelines that solving some of the problems the criteria defined. The document intends to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
 
 ## Wording
 
@@ -151,7 +151,7 @@ Guidelines:
 
 #### Upgrades
 
-As a platform operator, I am able to upgrade the Kubernetes cluster with the minimum application downtime.
+As a platform operator, I can upgrade the Kubernetes cluster with the minimum application downtime.
 
 As a platform operator, I can upgrade Cloud Foundry with minimum control plane downtime.
 
@@ -179,9 +179,9 @@ Guidelines:
 
 ### Open Source
 
-As an open source contributor, I am able to submit a patch for the component(that passing tests).
+As an open-source contributor, I can submit a patch for the component(that passing tests).
 
-As an open source platform architect, I am able to consume the component.
+As an open-source platform architect, I can consume the component.
 
 Guidelines:
 
@@ -236,7 +236,7 @@ Possible solutions:
 
   * Problem: The platform engineer needs to know how to do the manual config update.
 
-* The configuration is passed via command line flags in the pod specification
+* The configuration is passed via command-line flags in the pod specification
 
   * Problem: It is not possible to use the Kubernetes secrets.
 
@@ -339,7 +339,7 @@ Improves:
 
 Reasons:
 
-* It takes more time to pull new version of image in case of scaling, upgrade or recovery.
+* It takes more time to pull a new version of the image in case of scaling, upgrade or recovery.
 * Images stored on the worker node disk and might require bigger disks.
 * The unneeded packages require upgrading it more often.
 * The operator needs to know if the packages in the image up-to-date or not.
@@ -468,7 +468,7 @@ Reasons:
 
 * The pod executes init containers sequentially and this increases the time for the pod to start. Consider using Kubernetes jobs instead.
 * Crashes in init containers do not show up in pod crash count.
-* The logs from init containers is impossible to get from the pod after pod is started.
+* The logs from init containers is impossible to get from the pod after the pod is started.
 
 #### Pod requests
 
@@ -656,7 +656,7 @@ Improves:
 
 #### Access from outside
 
-If the component has to be accessed externally, it writes a K8s Ingress resource or a set of Istio VirtualService + Gateway resourcesprovides ingress with free form annotations and the ability to provide a load balancer
+If the component has to be accessed externally, it writes a K8s Ingress resource or a set of Istio VirtualService + Gateway resourcesproviders ingress with free form annotations and the ability to provide a load balancer
 
 Improves:
 

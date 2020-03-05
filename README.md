@@ -37,7 +37,7 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 * If the pod does not need access to the Kubernetes API, the service account token is not mounted to it
 * The pod spec should satisfy [the restricted pod security policy provided by Kubernetes](https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/policy/restricted-psp.yaml)
   * Pod should drop all capabilities
-  * Pod should have proper seccomd or apparmor annotation
+  * Pod should have proper `seccomd` or `apparmor` annotation
   * Pod should have property readOnlyRootFilesystem=readOnlyRootFilesystem
 * If a pod requires TLS/SSL cert/keys for public consumption it must support utilising cert-manager.
 * Ports that are exposed by pod must have a name which should be the same as in the corresponding service
