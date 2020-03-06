@@ -46,7 +46,7 @@ Also check [shorter version](./README.md)
     * [Pod service account](#pod-service-account)
     * [Service account token](#service-account-token)
     * [Pod security configuration](#pod-security-configuration)
-    * [Using keys](#using-keys)
+    * [Using certificates](#using-certificates)
     * [Pod port names](#pod-port-names)
     * [Affinity](#affinity)
   * [Service specification](#service-specification)
@@ -58,7 +58,7 @@ Also check [shorter version](./README.md)
     * [Pod Security Policy](#pod-security-policy)
     * [Networking policy](#networking-policy)
     * [Istio RBAC](#istio-rbac)
-    * [Access from outside](#access-from-outside)
+    * [Access outside the cluster](#access-outside-the-cluster)
     * [Using secrets](#using-secrets)
     * [Service accounts](#service-accounts)
     * [Replicas count](#replicas-count)
@@ -92,6 +92,8 @@ Guidelines:
 * [Liveness probe](#liveness-probe)
 * [Number of containers](#number-of-containers)
 * [Pod requests](#pod-requests)
+* [Affinity](#affinity)
+* [Replica count](#replicas-count)
 
 #### Failure Recovery
 
@@ -106,6 +108,7 @@ Guidelines:
 Guidelines:
 
 * [Number of containers](#number-of-containers)
+* [Affinity](#affinity)
 
 ### Operability
 
@@ -116,7 +119,8 @@ Guidelines:
 * [Storing dependencies on the image](#dependencies)
 * [Number of containers](#number-of-containers)
 * [Pod requests](#pod-requests)
-* [Resource planning](#resource-planning)
+* [Pod limits](#pod-limits)
+* [Affinity](#affinity)
 
 #### Health Monitoring
 
@@ -134,6 +138,7 @@ Guidelines:
 
 * [Log location](#log-location)
 * [Pod labels](#pod-labels)
+* [Service labels](#service-labels)
 
 #### Diagnostics Tooling
 
@@ -141,6 +146,7 @@ Guidelines:
 
 * [Image metadata](#image-metadata)
 * [Pod labels](#pod-labels)
+* [Service labels](#service-labels)
 
 #### Customisation
 
@@ -148,6 +154,13 @@ Guidelines:
 
 * [Passing configuration to the application](#passing-configuration-to-the-application)
 * [Pod service account](#pod-service-account)
+* [Using certificates](#using-certificates)
+* [Pod port names](#pod-port-names)
+* [Networking policy](#networking-policy)
+* [Istio RBAC](#istio-rbac)
+* [Access outside the cluster](#access-outside-the-cluster)
+* [Using secrets](#using-secrets)
+* [Service accounts](#service-accounts)
 
 #### Upgrades
 
@@ -165,6 +178,7 @@ Guidelines:
 * [Image referenced by sha256](#image-referenced-by-sha256)
 * [Number of containers](#number-of-containers)
 * [Number of init containers](#number-of-init-containers)
+* [Pod disruption budget](#pod-disruption-budget)
 
 ### Security
 
@@ -176,6 +190,10 @@ Guidelines:
 * [Pod service account](#pod-service-account)
 * [Service account token](#service-account-token)
 * [Pod security configuration](#pod-security-configuration)
+* [Pod security policy](#pod-security-policy)
+* [Networking policy](#networking-policy)
+* [Istio RBAC](#istio-rbac)
+* [Service accounts](#service-accounts)
 
 ### Open Source
 
@@ -189,6 +207,10 @@ Guidelines:
 * [Base image](#base-image)
 * [Image location](#image-location)
 * [Packaging instructions](#packaging-instructions)
+* [Networking policy](#networking-policy)
+* [Istio RBAC](#istio-rbac)
+* [Access outside the cluster](#access-outside-the-cluster)
+* [Using secrets](#using-secrets)
 
 ### Code
 
@@ -543,13 +565,13 @@ See also:
 * [Pod security policies](#pod-security-policy)
 * [Non-root user for container](#non-root-user)
 
-#### Using keys
+#### Using certificates
 
 If a pod requires TLS/SSL cert/keys for public consumption it must support utilising cert-manager.
 
 Improves:
 
-* customisation
+* [customisation](#customisation)
 
 Reason:
 
@@ -561,7 +583,7 @@ Ports that are exposed by pod must have a name which should be the same as in th
 
 Improves:
 
-* customisation
+* [customisation](#customisation)
 
 Reason:
 
@@ -573,9 +595,9 @@ The specification allows setting affinity and anti-affinity rules.
 
 Improves:
 
-* availability
-* isolation
-* resource planning
+* [availability](#availability)
+* [isolation](#isolation)
+* [resource planning](#resource-planning)
 
 See also:
 
@@ -612,7 +634,7 @@ Improves:
 
 #### Pod Disruption Budget
 
-If the process is expected to have no downtime it has PodDisruptionBudget
+If the process is expected to have no downtime, it has PodDisruptionBudget
 
 Improves:
 
@@ -654,7 +676,7 @@ Improves:
 * [Customisation](#customisation)
 * [Open Source](#open-source)
 
-#### Access from outside
+#### Access outside the cluster
 
 If the component has to be accessed externally, it writes a K8s Ingress resource or a set of Istio VirtualService + Gateway resourcesproviders ingress with free form annotations and the ability to provide a load balancer
 
@@ -667,6 +689,11 @@ Improves:
 
 If the component needs some secrets, it has an option to use an existing Kubernetes object with the predefined format. The Kubernetes object name can be provided by the platform engineer.
 The secret for certificates uses known K8s format
+
+Improves:
+
+* [Customisation](#customisation)
+* [Open Source](#open-source)
 
 #### Service accounts
 
