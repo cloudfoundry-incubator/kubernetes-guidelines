@@ -726,9 +726,21 @@ If the component has a soft dependency(can work without it) on another component
 
 The address for the dependent component can always be specified by the platform engineer and has a sane default
 
+Improves:
+
+* [Customisation](#customisation)
+
+Reason:
+
+Integration with KubeCF and CF-4-K8s requires using different DNS addresses.
+
 ### Documentation
 
 Each non-alpha property that platform engineer can specify is documented in README.
+
+Improves:
+
+* [Customisation](#customisation)
 
 ### Kubernetes versions support
 
