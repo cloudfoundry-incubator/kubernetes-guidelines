@@ -12,13 +12,13 @@ Also check [shorter version](./README.md)
   * [Operability](#operability)
     * [Resource Planning](#resource-planning)
     * [Health Monitoring](#health-monitoring)
-    * [Scalability](#scalability)
     * [Logging](#logging)
     * [Diagnostics Tooling](#diagnostics-tooling)
     * [Customisation](#customisation)
     * [Upgrades](#upgrades)
   * [Security](#security)
   * [Open Source](#open-source)
+* [Guidelines](#guidelines)
   * [Code](#code)
     * [Health endpoint](#health-endpoint)
     * [Log location](#log-location)
@@ -71,7 +71,7 @@ Also check [shorter version](./README.md)
 
 ## Structure
 
-The document consists of two big parts: criteria grouped in themes and guidelines that solving some of the problems the criteria defined. The document intends to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
+The document consists of two big parts: [criteria grouped in themes](#production-readiness-criteria) and [guidelines that solving some of the problems the criteria defined](#guidelines). The document intends to help developers to create a component that the platform engineer would be able to operate using existing Kubernetes patterns.
 
 ## Wording
 
@@ -124,13 +124,9 @@ Guidelines:
 
 #### Health Monitoring
 
-....
-
 Guidelines:
 
 * [Health checks](#health-endpoint)
-
-#### Scalability
 
 #### Logging
 
@@ -211,6 +207,8 @@ Guidelines:
 * [Istio RBAC](#istio-rbac)
 * [Access outside the cluster](#access-outside-the-cluster)
 * [Using secrets](#using-secrets)
+
+## Guidelines
 
 ### Code
 
