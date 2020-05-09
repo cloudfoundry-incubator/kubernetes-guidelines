@@ -26,6 +26,7 @@ Also check [shorter version](./README.md)
     * [Ability to rollback](#ability-to-rollback)
     * [Work with signals](#work-with-signals)
     * [Resilience to cluster upgrades](#resilience-to-cluster-upgrades)
+    * [Labels for objects managed by component](#labels-for-objects-managed-by-component)
   * [Packaging](#packaging)
     * [Non-root user](#non-root-user)
     * [Image metadata](#image-metadata)
@@ -54,6 +55,7 @@ Also check [shorter version](./README.md)
     * [Service pod names](#service-pod-names)
     * [Service labels](#service-labels)
   * [Other Kubernetes objects](#other-kubernetes-objects)
+    * [Component Object Labels](#component-object-labels)
     * [Pod Disruption Budget](#pod-disruption-budget)
     * [Pod Security Policy](#pod-security-policy)
     * [Networking policy](#networking-policy)
@@ -135,6 +137,8 @@ Guidelines:
 * [Log location](#log-location)
 * [Pod labels](#pod-labels)
 * [Service labels](#service-labels)
+* [Labels for objects managed by component](#labels-for-objects-managed-by-component)
+* [Component objects labels](#component-object-labels)
 
 #### Diagnostics Tooling
 
@@ -143,6 +147,8 @@ Guidelines:
 * [Image metadata](#image-metadata)
 * [Pod labels](#pod-labels)
 * [Service labels](#service-labels)
+* [Labels for objects managed by component](#labels-for-objects-managed-by-component)
+* [Component objects labels](#component-object-labels)
 
 #### Customisation
 
@@ -301,6 +307,15 @@ Improves:
 
 * [Kubernetes cluster upgrades](#upgrades)
 
+#### Labels for objects managed by component
+
+Kubernetes resources that created by a component should have a label `app.kubernetes.io/managed-by` with value `cloudfoundry`
+
+Improves:
+
+* [logging](#logging)
+* [diagnostic tooling](#diagnostics-tooling)
+
 ### Packaging
 
 #### Non-root user
@@ -413,7 +428,7 @@ See also:
 
 #### Pod labels
 
-The component should have [the labels that suggested by Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels), for example, `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
+The component should have [the labels that suggested by Kubernetes](https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels), for example, `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to `cloudfoundry` and `app.kubernetes.io/component` set to component name.
 
 Improves:
 
@@ -621,7 +636,7 @@ Reason:
 
 #### Service labels
 
-The service must have the same labels as a pod
+The service must have the same labels as a [pod](#pod-labels)
 
 Improves:
 
@@ -629,6 +644,15 @@ Improves:
 * [diagnostics](#diagnostics-tooling)
 
 ### Other Kubernetes objects
+
+#### Component Object Labels
+
+Each Kubernetes object that is deployed should have the same base labels [as the pod](#pod-labels) this object will be attached to.
+
+Improves:
+
+* [logging](#logging)
+* [diagnostics](#diagnostics-tooling)
 
 #### Pod Disruption Budget
 

@@ -10,6 +10,7 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 * The application with version n-1 should be able to start with the database that has been migrated to version n
 * The application must respect SIGTERM signal and start sending NotReady probe
 * The component is either expected to work during K8s control plane downtime or has a clear notice README that to achieve high availability, the control plane of Kubernetes must have multiple replicas.
+* Kubernetes resources that created by a component should have a label `app.kubernetes.io/managed-by` with value `cloudfoundry`
 
 ## Packaging
 
@@ -25,7 +26,7 @@ See the description for each guideline in [DETAILED document](DETAILED.md)
 ## Pod specification
 
 * The image references must always include sha256
-* The component should have the labels that suggested by Kubernetes At least `app.kubernetes.io/name`, `app.kubernetes.io/version`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
+* The component should have the labels that suggested by Kubernetes such as `app.kubernetes.io/name`, `app.kubernetes.io/version` and `app.kubernetes.io/component`. The `app.kubernetes.io/part-of` is set to Cloud Foundry
 * The readiness probe for the main container must be always present
 * Liveness probe if present should point to a different endpoint than the readiness probe. Ideally, something that does not require any processing
 * In general, a single pod should have a single container. There are might be edge-cases, but the pod shouldn’t have more than 5 containers in its spec
